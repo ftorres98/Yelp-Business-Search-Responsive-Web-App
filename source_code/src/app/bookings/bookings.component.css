@@ -1,0 +1,15 @@
+#tableDesign{
+    background-color: white; 
+    text-align: center; 
+    border-radius: 2%; 
+    border: transparent;
+    width: 100%;
+}
+
+.deleteHover:hover{
+    cursor: pointer;
+}
+
+table{
+    font-size: small;
+}

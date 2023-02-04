@@ -1,0 +1,227 @@
+<div *ngIf="dataService.show_details" class=" container centerDetails">
+    <div class="adjustA"><button type="button" (click)="goBack()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+      </svg></button>
+    </div>
+
+    <div class="adjustN">{{dataService.details.name}}</div>
+
+
+    <mat-tab-group mat-align-tabs="center">
+    <mat-tab label="Business details">
+        <div class="container text-center">
+            <div class="row justify-content-evenly">
+                <div class="col-md-4">
+                    <div class="title adjustTitle">Address</div>
+                    <div *ngIf="!hasProperty('display_address')">N/A</div>
+                    <div *ngIf="hasProperty('display_address')">
+                        <div *ngIf="!dataService.details.location.display_address">N/A</div>
+                        <div *ngIf="dataService.details.location.display_address">
+                            <span *ngFor="let i of dataService.details.location.display_address">
+                                {{i}}
+                            </span>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="title adjustTitle">Category</div>
+                    <div *ngIf="!hasProperty('categories')">N/A</div>
+                    <div *ngIf="hasProperty('categories')">
+                        <div *ngIf="!dataService.details.categories">N/A</div>
+                        <div *ngIf="dataService.details.categories">
+                                <span *ngFor="let cat of dataService.details.categories; let i = index">
+                                    <span *ngIf="i==dataService.details.categories.length-1">
+                                        {{cat.title}}
+                                    </span>
+                                    <span *ngIf="i!=dataService.details.categories.length-1">
+                                        {{cat.title}} |
+                                    </span>
+                                </span>
+                        </div>
+                    </div>
+                  </div>              
+            </div>
+            <div class="row justify-content-evenly">
+                <div class="col-md-4">
+                    <div class="title adjustTitle">Phone</div>
+                    <div *ngIf="!hasProperty('display_phone')">N/A</div>
+                    <div *ngIf="hasProperty('display_phone')">
+                        <div *ngIf="!dataService.details.display_phone.length">N/A</div>
+                        <div *ngIf="dataService.details.display_phone.length">{{dataService.details.display_phone}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="title adjustTitle">Price Range</div>
+                    <div *ngIf="!hasProperty('price')">N/A</div>
+                    <div *ngIf="hasProperty('price')">
+                        <div *ngIf="!dataService.details.price.length">N/A</div>
+                        <div *ngIf="dataService.details.price.length">{{dataService.details.price}}</div>
+                    </div>
+                  </div>              
+            </div>
+            <div class="row justify-content-evenly">
+                <div class="col-md-4">
+                    <div class="title adjustTitle">Status</div>
+                    <div *ngIf="!hasProperty('is_open_now')">N/A</div>
+                    <div *ngIf="hasProperty('is_open_now')">
+                        <div *ngIf="dataService.details.hours[0].is_open_now" style="color: green;">Open</div>
+                        <div *ngIf="!dataService.details.hours[0].is_open_now" style="color: red;">Closed</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="title adjustTitle">Visit yelp for more</div>
+                    <div *ngIf="!hasProperty('url')">N/A</div>
+                    <div *ngIf="hasProperty('url')">
+                        <a href="{{dataService.details.url}}" target="_blank">Business link</a>
+                    </div>
+                  </div>            
+            </div>
+            <div class="row justify-content-evenly">
+                <div class="col-md-4">
+                    <div *ngIf="!checkLocalStorage(dataService.details.id)">
+                        <button type="button" class="btn btn-primary reserve" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                            Reserve Now
+                        </button>
+                    </div>
+                    <div *ngIf="checkLocalStorage(dataService.details.id)">
+                        <button type="button" class="btn btn-primary" (click)="cancelReservation()">
+                            Cancel Reservation
+                        </button>
+                    </div>
+                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="staticBackdropLabel">Reservation Form</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div><b>{{dataService.details.name}}</b></div>
+                                <form [formGroup]="group">
+                                    <div class="container text-left">
+                                        <div class="row justify-content-start">
+                                            <label for="exampleInputEmail1" class="form-label" style="text-align:left; padding: 0; margin-top: 0px;">Email</label>
+                                            <input type="email" class="form-control" id="exampleInputEmail1" [(ngModel)]="selectedEmail" formControlName="emailCtrl" required [class.is-invalid]="group.get('emailCtrl')?.invalid && group.get('emailCtrl')?.touched">
+                                            <div *ngIf="(group.get('emailCtrl')?.invalid && group.get('emailCtrl')?.touched) || group.get('emailCtrl')?.dirty || this.attemptedSubmit">
+                                                <small *ngIf="group.get('emailCtrl')?.errors?.['required']" class="text-danger">Email is required</small>
+                                                <small *ngIf="group.get('emailCtrl')?.errors?.['email']" class="text-danger">Email must be a valid email address</small>
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-start">
+                                            <label for="dateInput" class="form-label" style="text-align:left; padding: 0px; margin-top: 7px;">Date</label>
+                                            <input type="date" class="form-control" id="dateInput" min="{{currentDate | date: 'yyyy-MM-dd'}}" [(ngModel)]="selectedDate" formControlName="dateCtrl" required [class.is-invalid]="group.get('dateCtrl')?.invalid && group.get('dateCtrl')?.touched">
+                                            <div *ngIf="(group.get('dateCtrl')?.invalid && group.get('dateCtrl')?.touched) || group.get('dateCtrl')?.dirty || this.attemptedSubmit">
+                                                <small *ngIf="group.get('dateCtrl')?.errors?.['required']" class="text-danger">Date is required</small>
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-start">
+                                            <label for="timeHour" class="form-label" style="text-align:left; padding: 0px; margin-top: 7px;">Time</label>
+                                            <select class="form-control" id="timeHour" style="width: 20%;" [(ngModel)]="selectedHour" formControlName="hourCtrl" required [class.is-invalid]="group.get('hourCtrl')?.invalid && group.get('hourCtrl')?.touched || (this.attemptedSubmit && group.get('hourCtrl')?.invalid)">
+                                                <option selected>10</option>
+                                                <option>11</option>
+                                                <option>12</option>
+                                                <option>13</option>
+                                                <option>14</option>
+                                                <option>15</option>
+                                                <option>16</option>
+                                                <option>17</option>
+                                            </select> &nbsp; : &nbsp; <select class="form-control" id="timeMinute" style="width: 20%;" [(ngModel)]="selectedMinute" formControlName="minuteCtrl" required [class.is-invalid]="(group.get('minuteCtrl')?.invalid && group.get('minuteCtrl')?.touched) || (this.attemptedSubmit && group.get('minuteCtrl')?.invalid)" >
+                                                <option selected>00</option>
+                                                <option>15</option>
+                                                <option>30</option>
+                                                <option>45</option>
+                                            </select>
+
+                                            <div class="col-md-auto" style="align-items:flex-start;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+                                                <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                                                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+                                            </svg></div>
+
+                                            <div class="row justify-content-center">
+                                                <input class="form-control submitButton" type="submit" (click)="onSubmit()" id="submitRes" style="margin-top: 20px; padding: 0px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" #closeButton class="btn btn-secondary" data-bs-dismiss="modal" style="background-color: black;" (click)="onClose()">Close</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                  </div>             
+            </div>
+            <div class="row justify-content-evenly">
+                <div class="col-md-4">
+                    <div class="title adjustTitle" style="margin-bottom: 20px;">
+                        Share on: <a style="margin-right: 10px;" href="https://twitter.com/intent/tweet?text=Check {{dataService.details.name}} on Yelp.&url={{dataService.details.url}}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter" viewBox="0 0 16 16">
+                            <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
+                          </svg></a> 
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{dataService.details.url}}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                            <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
+                          </svg></a>
+                        </div>
+                  </div>             
+            </div>
+
+            <div class="row justify-content-evenly">
+                <div class="col-md-6" style="margin-bottom: 20px;">
+                    <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                          <div class="carousel-item active" data-bs-interval="10000">
+                            <img src="{{dataService.details.photos[0]}}" class="d-block w-100" alt="...">
+                          </div>
+                          <div class="carousel-item" data-bs-interval="2000">
+                            <img src="{{dataService.details.photos[1]}}" class="d-block w-100" alt="...">
+                          </div>
+                          <div class="carousel-item">
+                            <img src="{{dataService.details.photos[2]}}" class="d-block w-100" alt="...">
+                          </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+                          <span class="carousel-control-prev-icon" aria-hidden="false"></span>
+                          <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+                          <span class="carousel-control-next-icon" aria-hidden="false"></span>
+                          <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab label="Map Location">
+        <div *ngIf="!hasProperty('coordinates')" style="text-align: center;">No map available</div>
+        <div *ngIf="hasProperty('coordinates')">
+            <div class="my-google-map">
+                <div style="width: 100%; height: 650px;">
+                    <google-map width="100%" height="100%" [options]="{center: { lat: this.dataService.details.coordinates.latitude, lng: this.dataService.details.coordinates.longitude },
+                        zoom : 14}">
+                        <map-marker [position]="{ lat: this.dataService.details.coordinates.latitude, lng: this.dataService.details.coordinates.longitude }"></map-marker>
+                    </google-map>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab label="Reviews">
+        <div  *ngIf="!dataService.reviews.length" style="text-align: center;">No reviews available</div>
+        <div *ngIf="dataService.reviews.length">
+            <table class="table table-striped">
+                <tbody >
+                    <tr *ngFor="let item of dataService.reviews;">
+                    <td>
+                        <div><b>{{item.user.name}}</b></div>
+                        <div>Rating: {{item.rating}}/5</div>
+                        <br>
+                        <div>{{item.text}}</div>
+                        <br>
+                        <div>{{item.time_created.split(" ")[0]}}</div>
+                    </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </mat-tab>
+    </mat-tab-group>
+</div>

@@ -1,0 +1,64 @@
+<div class="container center">
+    <form ngNativeValidate (ngSubmit)="submit()">
+        <p class="title">Business Search</p>
+        <div class="container text-left">
+            <div class="row">
+                <div class="col">
+                    <P class="input" id="keyword">Keyword<label class="red">*</label></P>
+                    <input class="keywordInput" matImput [(ngModel)]="selectedTerm" [matAutocomplete]="auto" id="keywordID" [formControl]="termCtrl" required>
+                    <mat-autocomplete [panelWidth]="375" #auto="matAutocomplete" (optionSelected)="onSelected()">
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let term of Terms" [value]="term">
+                                <span>{{term}}</span>
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </div>
+            </div>     
+            <div class="row">
+                <div class="col-md-auto">
+                    <P class="input">Distance(miles)</P>
+                    <input class="distanceInput" type="text" id="distanceID" placeholder="10" [(ngModel)]="selectedDistance" [formControl]="distCtrl">
+                </div>
+                <div class="col-md-auto">
+                    <P class="input">Category<label class="red">*</label></P>
+                    <select class="categoryInput" id="categoryID" [(ngModel)]="selectedCategory" [formControl]="catCtrl" required>
+                        <option selected>Default</option>
+                        <option >Arts & Entertainment</option>
+                        <option >Health & Medical</option>
+                        <option >Hotels & Travel</option>
+                        <option >Food</option>
+                        <option >Professional Services</option>
+                    </select>
+                </div>
+            </div>  
+            <div class="row">
+                <div class="col">
+                    <P class="input">Location<label class="red">*</label></P>
+                    <input class="locationInput" type="text" id="locationID" [(ngModel)]="selectedLocation" [formControl]="locCtrl" required *ngIf="!isChecked">
+                    <input class="locationInput" type="text" disabled required *ngIf="isChecked">
+                </div>
+            </div>   
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" (change)="checkBoxchange()" id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    Auto-detect my location
+                </label>
+                </div>
+                
+        </div>
+
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-4" id="adjust">
+                    <input class="submitButton" type="submit" id="submit" [(ngModel)]="submitTerm" [formControl]="submitCtrl">
+                </div>
+                <div class="col-4" id="adjust">
+                    <input class="clearButton" type="reset" id="clear" [(ngModel)]="clearTerm" [formControl]="clearCtrl" (click)="clear()">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+

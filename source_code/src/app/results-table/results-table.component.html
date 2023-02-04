@@ -1,0 +1,28 @@
+<div *ngIf="dataService.show">
+    <div *ngIf="!dataService.data.length">
+        <p class="container text-center" id="noResult">No results available</p>
+    </div>
+
+    <div *ngIf="dataService.data.length" class="container centerTable">
+        <table class="table table-striped" id="tableDesign">
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Image</th>
+                <th scope="col">Business Name</th>
+                <th scope="col">Rating</th>
+                <th scope="col">Distance (miles)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="tableHover" *ngFor="let item of dataService.data; let i = index" style="height: 100px;" (click)="get(i)">
+                <th scope="row">{{i+1}}</th>
+                <td class="imageDesign" style="background-image: url({{item.image_url}});"></td>
+                <td>{{item.name}}</td>
+                <td>{{item.rating}}</td>
+                <td>{{item.distance}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
